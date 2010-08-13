@@ -1,0 +1,8 @@
+{application,euuid,
+	[{description,[]},
+	{vsn,"1"},
+	{registered,[]},
+	{applications,[kernel,stdlib]},
+	{mod,{euuid_app,[]}},
+	{env,[]},
+	{modules,[euuid_app,euuid_sup]}]}.
