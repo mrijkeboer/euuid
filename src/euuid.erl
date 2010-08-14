@@ -36,8 +36,17 @@ mac() ->
 %% @end
 %% -------------------------------------------------------------------
 random() ->
-	_Version = 4,
-	ok.
+	TH = new_random(12),
+	TM = new_random(16),
+	TL = new_random(32),
+	CSH = new_random(6),
+	CSL = new_random(8),
+	N = new_random(48),
+	V = 4,
+	<<THV:16>> = <<V:4, TH:12>>,
+	R = 2#10,
+	<<CSHR:8>> = <<R:2, CSH:6>>,
+	pack(TL, TM, THV, CSHR, CSL, N).
 
 
 %% -------------------------------------------------------------------
@@ -167,6 +176,8 @@ new_random(4) ->
 	random:uniform(16#F) -1;
 new_random(6) ->
 	random:uniform(16#3F) -1;
+new_random(8) ->
+	random:uniform(16#FF) -1;
 new_random(12) ->
 	random:uniform(16#FFF) -1;
 new_random(14) ->
@@ -177,6 +188,10 @@ new_random(24) ->
 	random:uniform(16#FFFFFF) -1;
 new_random(32) ->
 	random:uniform(16#FFFFFFFF) -1;
+new_random(48) ->
+	random:uniform(16#FFFFFFFFFFFF) -1;
+new_random(64) ->
+	random:uniform(16#FFFFFFFFFFFFFFFF) -1;
 new_random(Bits) when Bits > 0 andalso is_integer(Bits) ->
 	io:format("Called euuid:new_random(~w).~n", [Bits]),
 	random:uniform(erlang:trunc(math:pow(2, Bits))) -1.
