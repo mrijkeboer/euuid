@@ -17,6 +17,7 @@
 		ns_x500/0,
 		random/0,
 		sha1/2,
+		time_custom/0,
 		time_mac/0,
 		v1/0,
 		v3/2,
@@ -95,6 +96,26 @@ sha1(NsUUID, Name) ->
 	<<THV:16>> = <<V:4, TH:12>>,
 	R = 2#10,
 	<<CSHR:8>> = <<R:2, CSH:6>>,
+	pack([TL, TM, THV, CSHR, CSL, N]).
+
+
+%% -------------------------------------------------------------------
+%% @spec time_custom() ->
+%%				UUID
+%% @doc Get a new time and MAC based UUID with modified timestamp
+%%	layout to allow sorting on the UUID's date of creation.
+%% @end
+%% -------------------------------------------------------------------
+time_custom() ->
+	Timestamp = get_timestamp(),
+	<<TL:32, TM:16, TH:12>> = <<Timestamp:60>>, 
+	V = 15,
+	<<THV:16>> = <<V:4, TH:12>>,
+	ClockSeq = get_clock_seq(),
+	<<CSH:6, CSL:8>> = <<ClockSeq:14>>,
+	R = 2#10,
+	<<CSHR:8>> = <<R:2, CSH:6>>,
+	N = gen_mac(),
 	pack([TL, TM, THV, CSHR, CSL, N]).
 
 
