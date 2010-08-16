@@ -7,7 +7,22 @@
 %% -------------------------------------------------------------------
 -module(euuid).
 
--compile(export_all).
+-export([
+		v1/0,
+		v3/2,
+		v4/0,
+		v5/2,
+		mac/0,
+		md5/2,
+		random/0,
+		sha1/2,
+		format/1,
+		nil/0,
+		ns_dns/0,
+		ns_url/0,
+		ns_oid/0,
+		ns_x500/0
+	]).
 
 
 %% -------------------------------------------------------------------
@@ -26,7 +41,24 @@ mac() ->
 	R = 2#10,
 	<<CSHR:8>> = <<R:2, CSH:6>>,
 	N = gen_mac(),
-	pack(TL, TM, THV, CSHR, CSL, N).
+	pack([TL, TM, THV, CSHR, CSL, N]).
+
+
+%% -------------------------------------------------------------------
+%% @spec md5(NsUUID, Name) ->
+%%				UUID
+%% @doc Get a new MD5 name based UUID (RFC4122 Version 3).
+%% @end
+%% -------------------------------------------------------------------
+md5(NsUUID, Name) ->
+	Data = list_to_binary([<<NsUUID:128>>, Name]),
+	<<MD5:128>> = crypto:md5(Data),
+	<<TL:32, TM:16, _:4, TH:12, _:2, CSH:6, CSL:8, N:48>> = <<MD5:128>>,
+	V = 3,
+	<<THV:16>> = <<V:4, TH:12>>,
+	R = 2#10,
+	<<CSHR:8>> = <<R:2, CSH:6>>,
+	pack([TL, TM, THV, CSHR, CSL, N]).
 
 
 %% -------------------------------------------------------------------
@@ -46,18 +78,24 @@ random() ->
 	<<THV:16>> = <<V:4, TH:12>>,
 	R = 2#10,
 	<<CSHR:8>> = <<R:2, CSH:6>>,
-	pack(TL, TM, THV, CSHR, CSL, N).
+	pack([TL, TM, THV, CSHR, CSL, N]).
 
 
 %% -------------------------------------------------------------------
-%% @spec sha1() ->
+%% @spec sha1(NsUUID, Name) ->
 %%				UUID
 %% @doc Get a new SHA1 name based UUID (RFC4122 Version 5).
 %% @end
 %% -------------------------------------------------------------------
-sha1() ->
-	_Version = 5,
-	ok.
+sha1(NsUUID, Name) ->
+	Data = list_to_binary([<<NsUUID:128>>, Name]),
+	<<Sha1:160>> = crypto:sha(Data),
+	<<TL:32, TM:16, _:4, TH:12, _:2, CSH:6, CSL:8, N:48, _:32>> = <<Sha1:160>>,
+	V = 5,
+	<<THV:16>> = <<V:4, TH:12>>,
+	R = 2#10,
+	<<CSHR:8>> = <<R:2, CSH:6>>,
+	pack([TL, TM, THV, CSHR, CSL, N]).
 
 
 %% -------------------------------------------------------------------
@@ -71,6 +109,16 @@ v1() ->
 
 
 %% -------------------------------------------------------------------
+%% @spec v3(NsUUID, Name) ->
+%%				UUID
+%% @doc Get a new MD5 name based UUID (RFC4122 Version 3).
+%% @end
+%% -------------------------------------------------------------------
+v3(NsUUID, Name) ->
+	md5(NsUUID, Name).
+
+
+%% -------------------------------------------------------------------
 %% @spec v4() ->
 %%				UUID
 %% @doc Get a new (pseudo) random UUID (RFC4122 Version 4).
@@ -81,13 +129,13 @@ v4() ->
 
 
 %% -------------------------------------------------------------------
-%% @spec v5() ->
+%% @spec v5(NsUUID, Name) ->
 %%				UUID
 %% @doc Get a new SHA1 name based UUID (RFC4122 Version 5).
 %% @end
 %% -------------------------------------------------------------------
-v5() ->
-	sha1().
+v5(NsUUID, Name) ->
+	sha1(NsUUID, Name).
 
 
 %% -------------------------------------------------------------------
@@ -228,7 +276,7 @@ get_clock_seq() ->
 %% @doc Pack the parts into an UUID.
 %% @end
 %% -------------------------------------------------------------------
-pack(TL, TM, THV, CSHR, CSL, N) ->
+pack([TL, TM, THV, CSHR, CSL, N]) ->
 	<<UUID:128>> = <<TL:32, TM:16, THV:16, CSHR:8, CSL:8, N:48>>,
 	UUID.
 
