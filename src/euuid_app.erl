@@ -28,7 +28,7 @@
 %% @copyright Martijn P. Rijkeboer
 %% @author Martijn P. Rijkeboer <martijn@bunix.org>
 %% @version {@vsn}, {@date}, {@time}
-%% @doc Universally Unique IDentifier application module
+%% @doc Erlang UUID application module
 %% @end
 %% -------------------------------------------------------------------
 -module(euuid_app).
@@ -59,7 +59,8 @@ start(_StartType, _StartArgs) ->
 
 
 %%--------------------------------------------------------------------
-%% @spec stop(State) -> void()
+%% @spec stop(State) ->
+%%				void()
 %% @doc This function is called whenever an application has stopped.
 %% It is intended to be the opposite of Module:start/2 and should do
 %% any necessary cleaning up. The return value is ignored. 
