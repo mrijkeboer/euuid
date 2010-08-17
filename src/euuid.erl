@@ -56,7 +56,6 @@
 %% @end
 %% -------------------------------------------------------------------
 start() ->
-	application:start(crypto),
 	application:start(euuid).
 
 

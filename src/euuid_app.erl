@@ -55,6 +55,7 @@
 %% @end
 %%--------------------------------------------------------------------
 start(_StartType, _StartArgs) ->
+	crypto:start(),
 	euuid_sup:start_link().
 
 
