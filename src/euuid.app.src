@@ -29,4 +29,4 @@
 	{applications,[kernel,stdlib]},
 	{mod,{euuid_app,[]}},
 	{env,[]},
-	{modules,[euuid_app,euuid_sup]}]}.
+	{modules,[euuid,euuid_app,euuid_sup,euuid_server]}]}.
