@@ -28,7 +28,7 @@
 %% @copyright Martijn P. Rijkeboer
 %% @author Martijn P. Rijkeboer <martijn@bunix.org>
 %% @version {@vsn}, {@date}, {@time}
-%% @doc Universally Unique IDentifier supervisor
+%% @doc Erlang UUID supervisor module
 %% @end
 %% -------------------------------------------------------------------
 -module(euuid_sup).
@@ -73,5 +73,6 @@ start_link() ->
 %% @end
 %% -------------------------------------------------------------------
 init([]) ->
-	{ok, { {one_for_one, 5, 10}, []} }.
+	Server = ?CHILD(euuid_server, worker),
+	{ok, { {one_for_one, 5, 10}, [Server]} }.
 
