@@ -2,7 +2,7 @@
 %% euuid_server.erl - Erlang UUID server module
 %%
 %% @author Martijn P. Rijkeboer <martijn@bunix.org>
-%% @copyright Martijn P. Rijkeboer
+%% @copyright 2010 Martijn P. Rijkeboer
 %% @version {@vsn}, {@date}, {@time}
 %% @doc Erlang UUID server module
 %% @end
@@ -31,6 +31,7 @@
 %%
 %% -------------------------------------------------------------------
 -module(euuid_server).
+-author('Martijn Rijkeboer <martijn@bunix.org>').
 
 -behaviour(gen_server).
 

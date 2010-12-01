@@ -2,7 +2,7 @@
 %% euuid_sup.erl - Erlang UUID supervisor module
 %%
 %% @author Martijn P. Rijkeboer <martijn@bunix.org>
-%% @copyright Martijn P. Rijkeboer
+%% @copyright 2010 Martijn P. Rijkeboer
 %% @version {@vsn}, {@date}, {@time}
 %% @doc Erlang UUID supervisor module
 %% @end
@@ -31,6 +31,7 @@
 %%
 %% -------------------------------------------------------------------
 -module(euuid_sup).
+-author('Martijn Rijkeboer <martijn@bunix.org>').
 
 -behaviour(supervisor).
 

@@ -2,7 +2,7 @@
 %% euuid_app.erl - Erlang UUID application module
 %% 
 %% @author Martijn P. Rijkeboer <martijn@bunix.org>
-%% @copyright Martijn P. Rijkeboer
+%% @copyright 2010 Martijn P. Rijkeboer
 %% @version {@vsn}, {@date}, {@time}
 %% @doc Erlang UUID application module
 %% @end
@@ -31,6 +31,7 @@
 %%
 %% -------------------------------------------------------------------
 -module(euuid_app).
+-author('Martijn Rijkeboer <martijn@bunix.org>').
 
 -behaviour(application).
 

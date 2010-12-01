@@ -2,7 +2,7 @@
 %% euuid.erl - Erlang UUID API module
 %%
 %% @author Martijn P. Rijkeboer <martijn@bunix.org>
-%% @copyright Martijn P. Rijkeboer
+%% @copyright 2010 Martijn P. Rijkeboer
 %% @version {@vsn}, {@date}, {@time}
 %% @doc Erlang UUID API module.
 %% @end
@@ -31,6 +31,7 @@
 %%
 %% -------------------------------------------------------------------
 -module(euuid).
+-author('Martijn Rijkeboer <martijn@bunix.org>').
 
 %% API
 -export([start/0, stop/0]).
