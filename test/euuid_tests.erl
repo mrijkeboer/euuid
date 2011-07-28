@@ -23,24 +23,28 @@ nil_uuid_test() ->
 
 
 format_test_() ->
-  [
-    ?_assertEqual("00000000-0000-0000-0000-000000000000",
-      euuid:format(0)),
-    ?_assertEqual("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeff",
-      euuid:format(16#aaaaaaaabbbbccccddddeeeeeeeeeeff))
-  ].
+  { setup, fun setup/0, fun teardown/1,
+    [
+      ?_assertEqual("00000000-0000-0000-0000-000000000000",
+        euuid:format(0)),
+      ?_assertEqual("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeff",
+        euuid:format(16#aaaaaaaabbbbccccddddeeeeeeeeeeff))
+    ]
+  }.
 
 
 namespace_uuids_test_() ->
-  [ ?_assertEqual("6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-      euuid:format(euuid:ns_dns())),
-    ?_assertEqual("6ba7b811-9dad-11d1-80b4-00c04fd430c8",
-      euuid:format(euuid:ns_url())),
-    ?_assertEqual("6ba7b812-9dad-11d1-80b4-00c04fd430c8",
-      euuid:format(euuid:ns_oid())),
-    ?_assertEqual("6ba7b814-9dad-11d1-80b4-00c04fd430c8",
-      euuid:format(euuid:ns_x500()))
-  ].
+  { setup, fun setup/0, fun teardown/1,
+    [ ?_assertEqual("6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+        euuid:format(euuid:ns_dns())),
+      ?_assertEqual("6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+        euuid:format(euuid:ns_url())),
+      ?_assertEqual("6ba7b812-9dad-11d1-80b4-00c04fd430c8",
+        euuid:format(euuid:ns_oid())),
+      ?_assertEqual("6ba7b814-9dad-11d1-80b4-00c04fd430c8",
+        euuid:format(euuid:ns_x500()))
+    ]
+  }.
 
 
 time_mac_test_() ->

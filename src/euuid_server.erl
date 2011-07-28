@@ -40,6 +40,7 @@
 -export([md5/2, sha1/2]).
 -export([random/0]).
 -export([time_custom/0, time_mac/0]).
+-export([format/1]).
 
 %% gen_server callbacks
 -export([
@@ -119,6 +120,16 @@ sha1(NsUUID, Name) ->
 %% -------------------------------------------------------------------
 time_custom() ->
   gen_server:call(?SERVER, time_custom).
+
+
+%% -------------------------------------------------------------------
+%% @spec format(UUID) ->
+%%        UuidStr
+%% @doc Format the UUID into string representation.
+%% @end
+%% -------------------------------------------------------------------
+format(UUID) ->
+  gen_server:call(?SERVER, {format, UUID}).
 
 
 %%====================================================================
@@ -210,6 +221,10 @@ handle_call(time_custom, _From, State) ->
   <<CSHR:8>> = <<R:2, CSH:6>>,
   UUID = pack(TL, TM, THV, CSHR, CSL, Mac),
   {reply, UUID, State1};
+
+handle_call({format, UUID}, _From, State) ->
+  Str = io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~2.16.0b~2.16.0b-~12.16.0b", unpack(<<UUID:128>>)),
+  {reply, lists:flatten(Str), State};
 
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
@@ -445,4 +460,14 @@ set_clock_seq(ClockSeq, State) ->
 pack(TL, TM, THV, CSHR, CSL, N) ->
   <<UUID:128>> = <<TL:32, TM:16, THV:16, CSHR:8, CSL:8, N:48>>,
   UUID.
+
+
+%% -------------------------------------------------------------------
+%% @spec unpack(UUID) ->
+%%        [TL, TM, THV, CSHR, CSL, N]
+%% @doc Unpack the UUID into it's parts.
+%% @end
+%% -------------------------------------------------------------------
+unpack(<<TL:32, TM:16, THV:16, CSHR:8, CSL:8, N:48>>) ->
+  [TL, TM, THV, CSHR, CSL, N].
 
