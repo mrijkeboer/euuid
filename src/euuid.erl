@@ -50,175 +50,175 @@
 
 %% -------------------------------------------------------------------
 %% @spec start() ->
-%%				ok |
-%%				{error, Reason}
+%%        ok |
+%%        {error, Reason}
 %% @doc Start the Erlang UUID application.
 %% @end
 %% -------------------------------------------------------------------
 start() ->
-	application:start(euuid).
+  application:start(euuid).
 
 
 %% -------------------------------------------------------------------
 %% @spec stop() ->
-%%				ok |
-%%				{error, Reason}
+%%        ok |
+%%        {error, Reason}
 %% @doc Stop the Erlang UUID application.
 %% @end
 %% -------------------------------------------------------------------
 stop() ->
-	application:stop(euuid).
+  application:stop(euuid).
 
 
 %% -------------------------------------------------------------------
 %% @spec time_mac() ->
-%%				UUID
+%%        UUID
 %% @doc Get a new time and MAC based UUID (RFC4122 Version 1).
 %% @end
 %% -------------------------------------------------------------------
 time_mac() ->
-	euuid_server:time_mac().
+  euuid_server:time_mac().
 
 
 %% -------------------------------------------------------------------
 %% @spec md5(NsUUID, Name) ->
-%%				UUID
+%%        UUID
 %% @doc Get a new MD5 name based UUID (RFC4122 Version 3).
 %% @end
 %% -------------------------------------------------------------------
 md5(NsUUID, Name) ->
-	euuid_server:md5(NsUUID, Name).
+  euuid_server:md5(NsUUID, Name).
 
 
 %% -------------------------------------------------------------------
 %% @spec random() ->
-%%				UUID
+%%        UUID
 %% @doc Get a new (pseudo) random UUID (RFC4122 Version 4).
 %% @end
 %% -------------------------------------------------------------------
 random() ->
-	euuid_server:random().
+  euuid_server:random().
 
 
 %% -------------------------------------------------------------------
 %% @spec sha1(NsUUID, Name) ->
-%%				UUID
+%%        UUID
 %% @doc Get a new SHA1 name based UUID (RFC4122 Version 5).
 %% @end
 %% -------------------------------------------------------------------
 sha1(NsUUID, Name) ->
-	euuid_server:sha1(NsUUID, Name).
+  euuid_server:sha1(NsUUID, Name).
 
 
 %% -------------------------------------------------------------------
 %% @spec time_custom() ->
-%%				UUID
+%%        UUID
 %% @doc Get a new time and MAC based UUID with modified timestamp
-%%	layout to allow sorting on the UUID's date of creation.
+%%  layout to allow sorting on the UUID's date of creation.
 %% @end
 %% -------------------------------------------------------------------
 time_custom() ->
-	euuid_server:time_custom().
+  euuid_server:time_custom().
 
 
 %% -------------------------------------------------------------------
 %% @spec v1() ->
-%%				UUID
+%%        UUID
 %% @doc Get a new time and MAC based UUID (RFC4122 Version 1).
 %% @end
 %% -------------------------------------------------------------------
 v1() ->
-	euuid_server:time_mac().
+  euuid_server:time_mac().
 
 
 %% -------------------------------------------------------------------
 %% @spec v3(NsUUID, Name) ->
-%%				UUID
+%%        UUID
 %% @doc Get a new MD5 name based UUID (RFC4122 Version 3).
 %% @end
 %% -------------------------------------------------------------------
 v3(NsUUID, Name) ->
-	euuid_server:md5(NsUUID, Name).
+  euuid_server:md5(NsUUID, Name).
 
 
 %% -------------------------------------------------------------------
 %% @spec v4() ->
-%%				UUID
+%%        UUID
 %% @doc Get a new (pseudo) random UUID (RFC4122 Version 4).
 %% @end
 %% -------------------------------------------------------------------
 v4() ->
-	euuid_server:random().
+  euuid_server:random().
 
 
 %% -------------------------------------------------------------------
 %% @spec v5(NsUUID, Name) ->
-%%				UUID
+%%        UUID
 %% @doc Get a new SHA1 name based UUID (RFC4122 Version 5).
 %% @end
 %% -------------------------------------------------------------------
 v5(NsUUID, Name) ->
-	euuid_server:sha1(NsUUID, Name).
+  euuid_server:sha1(NsUUID, Name).
 
 
 %% -------------------------------------------------------------------
 %% @spec format(UUID) ->
-%%				UuidStr
+%%        UuidStr
 %% @doc Format the UUID into string representation.
 %% @end
 %% -------------------------------------------------------------------
 format(UUID) ->
-	Str = io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~2.16.0b~2.16.0b-~12.16.0b", unpack(<<UUID:128>>)),
-	lists:flatten(Str).
+  Str = io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~2.16.0b~2.16.0b-~12.16.0b", unpack(<<UUID:128>>)),
+  lists:flatten(Str).
 
 
 %% -------------------------------------------------------------------
 %% @spec nil() ->
-%%				UUID
+%%        UUID
 %% @doc Get the RFC4122 nil UUID.
 %% @end
 %% -------------------------------------------------------------------
 nil() ->
-	0.
+  0.
 
 
 %% -------------------------------------------------------------------
 %% @spec ns_dns() ->
-%%				UUID
+%%        UUID
 %% @doc Get the RFC4122 DNS namespace UUID.
 %% @end
 %% -------------------------------------------------------------------
 ns_dns() ->
-	16#6ba7b8109dad11d180b400c04fd430c8.
+  16#6ba7b8109dad11d180b400c04fd430c8.
 
 %% -------------------------------------------------------------------
 %% @spec ns_url() ->
-%%				UUID
+%%        UUID
 %% @doc Get the RFC4122 URL namespace UUID.
 %% @end
 %% -------------------------------------------------------------------
 ns_url() ->
-	16#6ba7b8119dad11d180b400c04fd430c8.
+  16#6ba7b8119dad11d180b400c04fd430c8.
 
 
 %% -------------------------------------------------------------------
 %% @spec ns_oid() ->
-%%				UUID
+%%        UUID
 %% @doc Get the RFC4122 OID namespace UUID.
 %% @end
 %% -------------------------------------------------------------------
 ns_oid() ->
-	16#6ba7b8129dad11d180b400c04fd430c8.
+  16#6ba7b8129dad11d180b400c04fd430c8.
 
 
 %% -------------------------------------------------------------------
 %% @spec ns_x500() ->
-%%				UUID
+%%        UUID
 %% @doc Get the RFC4122 X500 namespace UUID.
 %% @end
 %% -------------------------------------------------------------------
 ns_x500() ->
-	16#6ba7b8149dad11d180b400c04fd430c8.
+  16#6ba7b8149dad11d180b400c04fd430c8.
 
 
 %%====================================================================
@@ -227,10 +227,10 @@ ns_x500() ->
 
 %% -------------------------------------------------------------------
 %% @spec unpack(UUID) ->
-%%				[TL, TM, THV, CSHR, CSL, N]
+%%        [TL, TM, THV, CSHR, CSL, N]
 %% @doc Unpack the UUID into it's parts.
 %% @end
 %% -------------------------------------------------------------------
 unpack(<<TL:32, TM:16, THV:16, CSHR:8, CSL:8, N:48>>) ->
-	[TL, TM, THV, CSHR, CSL, N].
+  [TL, TM, THV, CSHR, CSL, N].
 

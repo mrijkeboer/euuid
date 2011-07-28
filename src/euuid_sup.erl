@@ -50,14 +50,14 @@
 
 %% -------------------------------------------------------------------
 %% @spec start_link() ->
-%%				{ok, Pid} |
-%%				ignore |
-%%				{error, Error}
+%%        {ok, Pid} |
+%%        ignore |
+%%        {error, Error}
 %% @doc Starts the supervisor
 %% @end
 %% -------------------------------------------------------------------
 start_link() ->
-	supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+  supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 
 %% ===================================================================
@@ -66,13 +66,13 @@ start_link() ->
 
 %% -------------------------------------------------------------------
 %% @spec init(Args) ->
-%%				{ok, {SupFlags, [ChildSpec]}} | 
-%%				ignore |
-%%				{error, Error}
+%%        {ok, {SupFlags, [ChildSpec]}} |
+%%        ignore |
+%%        {error, Error}
 %% @doc Get the restart strategy for the children of the supervisor
 %% @end
 %% -------------------------------------------------------------------
 init([]) ->
-	Server = ?CHILD(euuid_server, worker),
-	{ok, { {one_for_one, 5, 10}, [Server]} }.
+  Server = ?CHILD(euuid_server, worker),
+  {ok, { {one_for_one, 5, 10}, [Server]} }.
 

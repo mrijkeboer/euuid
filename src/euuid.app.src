@@ -1,3 +1,5 @@
+%% vim: set filetype=erlang :
+
 %% -------------------------------------------------------------------
 %% The MIT license.
 %%
@@ -24,10 +26,10 @@
 %% -------------------------------------------------------------------
 
 {application,euuid,
-	[{description,[]},
-	{vsn,"1"},
-	{registered,[]},
-	{applications,[kernel,stdlib]},
-	{mod,{euuid_app,[]}},
-	{env,[]},
-	{modules,[euuid,euuid_app,euuid_sup,euuid_server]}]}.
+  [{description,[]},
+  {vsn,"1"},
+  {registered,[]},
+  {applications,[kernel,stdlib]},
+  {mod,{euuid_app,[]}},
+  {env,[]},
+  {modules,[euuid,euuid_app,euuid_sup,euuid_server]}]}.
