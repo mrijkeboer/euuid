@@ -1,15 +1,15 @@
 %% -------------------------------------------------------------------
 %% euuid.erl - Erlang UUID API module
 %%
-%% @author Martijn P. Rijkeboer <martijn@bunix.org>
-%% @copyright 2010 Martijn P. Rijkeboer
+%% @author Martijn Rijkeboer <martijn@bunix.org>
+%% @copyright 2010 Martijn Rijkeboer
 %% @version {@vsn}, {@date}, {@time}
 %% @doc Erlang UUID API module.
 %% @end
 %%
 %% The MIT license.
 %%
-%% Copyright (c) 2010 Martijn P. Rijkeboer
+%% Copyright (c) 2010 Martijn Rijkeboer
 %%
 %% Permission is hereby granted, free of charge, to any person obtaining a copy
 %% of this software and associated documentation files (the "Software"), to
