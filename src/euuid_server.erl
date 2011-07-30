@@ -147,9 +147,9 @@ format(UUID) ->
 %%--------------------------------------------------------------------
 init([]) ->
   Dict0 = dict:new(),
-  Dict1 = set_timestamp(new_timestamp(), Dict0),
-  Dict2 = set_clock_seq(new_clock_seq(), Dict1),
-  Dict3 = set_mac(new_mac(), Dict2),
+  Dict1 = set_timestamp(euuid_util:get_timestamp(), Dict0),
+  Dict2 = set_clock_seq(euuid_util:new_clock_seq(), Dict1),
+  Dict3 = set_mac(euuid_util:get_mac_addr(), Dict2),
   {ok, Dict3}.
 
 
@@ -172,7 +172,7 @@ handle_call(time_mac, _From, State) ->
   <<CSH:6, CSL:8>> = <<ClockSeq:14>>,
   R = 2#10,
   <<CSHR:8>> = <<R:2, CSH:6>>,
-  UUID = pack(TL, TM, THV, CSHR, CSL, Mac),
+  UUID = euuid_util:pack(TL, TM, THV, CSHR, CSL, Mac),
   {reply, UUID, State1};
 
 handle_call({md5, NsUUID, Name}, _From, State) ->
@@ -183,21 +183,21 @@ handle_call({md5, NsUUID, Name}, _From, State) ->
   <<THV:16>> = <<V:4, TH:12>>,
   R = 2#10,
   <<CSHR:8>> = <<R:2, CSH:6>>,
-  UUID = pack(TL, TM, THV, CSHR, CSL, N),
+  UUID = euuid_util:pack(TL, TM, THV, CSHR, CSL, N),
   {reply, UUID, State};
 
 handle_call(random, _From, State) ->
-  TH = new_random(12),
-  TM = new_random(16),
-  TL = new_random(32),
-  CSH = new_random(6),
-  CSL = new_random(8),
-  N = new_random(48),
+  TH = euuid_util:new_random(12),
+  TM = euuid_util:new_random(16),
+  TL = euuid_util:new_random(32),
+  CSH = euuid_util:new_random(6),
+  CSL = euuid_util:new_random(8),
+  N = euuid_util:new_random(48),
   V = 4,
   <<THV:16>> = <<V:4, TH:12>>,
   R = 2#10,
   <<CSHR:8>> = <<R:2, CSH:6>>,
-  UUID = pack(TL, TM, THV, CSHR, CSL, N),
+  UUID = euuid_util:pack(TL, TM, THV, CSHR, CSL, N),
   {reply, UUID, State};
 
 handle_call({sha1, NsUUID, Name}, _From, State) ->
@@ -208,7 +208,7 @@ handle_call({sha1, NsUUID, Name}, _From, State) ->
   <<THV:16>> = <<V:4, TH:12>>,
   R = 2#10,
   <<CSHR:8>> = <<R:2, CSH:6>>,
-  UUID = pack(TL, TM, THV, CSHR, CSL, N),
+  UUID = euuid_util:pack(TL, TM, THV, CSHR, CSL, N),
   {reply, UUID, State};
 
 handle_call(time_custom, _From, State) ->
@@ -219,11 +219,11 @@ handle_call(time_custom, _From, State) ->
   <<CSH:6, CSL:8>> = <<ClockSeq:14>>,
   R = 2#10,
   <<CSHR:8>> = <<R:2, CSH:6>>,
-  UUID = pack(TL, TM, THV, CSHR, CSL, Mac),
+  UUID = euuid_util:pack(TL, TM, THV, CSHR, CSL, Mac),
   {reply, UUID, State1};
 
 handle_call({format, UUID}, _From, State) ->
-  Str = io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~2.16.0b~2.16.0b-~12.16.0b", unpack(<<UUID:128>>)),
+  Str = io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~2.16.0b~2.16.0b-~12.16.0b", euuid_util:unpack(<<UUID:128>>)),
   {reply, lists:flatten(Str), State};
 
 handle_call(_Request, _From, State) ->
@@ -288,26 +288,26 @@ code_change(_OldVsn, State, _Extra) ->
 %% @end
 %% -------------------------------------------------------------------
 get_data(State) ->
-  NewTimestamp = new_timestamp(),
+  NewTimestamp = euuid_util:get_timestamp(),
   case get_timestamp(State) of
     {ok, Timestamp} when Timestamp > NewTimestamp ->
-      NewClockSeq = new_clock_seq();
+      NewClockSeq = euuid_util:new_clock_seq();
     {ok, _Timestamp} ->
       case get_clock_seq(State) of
         {ok, ClockSeq} ->
           NewClockSeq = ClockSeq;
         error ->
-          NewClockSeq = new_clock_seq()
+          NewClockSeq = euuid_util:new_clock_seq()
       end;
     error ->
-      NewClockSeq = new_clock_seq()
+      NewClockSeq = euuid_util:new_clock_seq()
   end,
 
   case get_mac(State) of
     {ok, Mac} ->
       NewMac = Mac;
     error ->
-      NewMac = new_mac()
+      NewMac = euuid_util:get_mac_addr()
   end,
 
   State1 = set_timestamp(NewTimestamp, State),
@@ -328,22 +328,6 @@ get_mac(State) ->
 
 
 %% -------------------------------------------------------------------
-%% @spec new_mac() ->
-%%        Mac
-%% @doc Generate a new MAC-address.
-%% @end
-%% -------------------------------------------------------------------
-new_mac() ->
-  Head = new_random(6),
-  Rest = new_random(16),
-  Nic = new_random(24),
-  Local = 1,
-  Multicast = 1,
-  <<Mac:48>> = <<Head:6, Local:1, Multicast:1, Rest:16, Nic:24>>,
-  Mac.
-
-
-%% -------------------------------------------------------------------
 %% @spec set_mac(Mac, State) ->
 %%        State
 %% @doc Set the MAC-address.
@@ -351,37 +335,6 @@ new_mac() ->
 %% -------------------------------------------------------------------
 set_mac(Mac, State) ->
   dict:store(mac, Mac, State).
-
-
-%% -------------------------------------------------------------------
-%% @spec new_random(Bits) ->
-%%        Number
-%% @doc Generate a new random number with a maximum size of Bits bit.
-%% @end
-%% -------------------------------------------------------------------
-new_random(4) ->
-  random:uniform(16#F) -1;
-new_random(6) ->
-  random:uniform(16#3F) -1;
-new_random(8) ->
-  random:uniform(16#FF) -1;
-new_random(12) ->
-  random:uniform(16#FFF) -1;
-new_random(14) ->
-  random:uniform(16#3FFF) -1;
-new_random(16) ->
-  random:uniform(16#FFFF) -1;
-new_random(24) ->
-  random:uniform(16#FFFFFF) -1;
-new_random(32) ->
-  random:uniform(16#FFFFFFFF) -1;
-new_random(48) ->
-  random:uniform(16#FFFFFFFFFFFF) -1;
-new_random(64) ->
-  random:uniform(16#FFFFFFFFFFFFFFFF) -1;
-new_random(Bits) when Bits > 0 andalso is_integer(Bits) ->
-  io:format("Called euuid:new_random(~w).~n", [Bits]),
-  random:uniform(erlang:trunc(math:pow(2, Bits))) -1.
 
 
 %% -------------------------------------------------------------------
@@ -393,21 +346,6 @@ new_random(Bits) when Bits > 0 andalso is_integer(Bits) ->
 %% -------------------------------------------------------------------
 get_timestamp(State) ->
   dict:find(timestamp, State).
-
-
-%% -------------------------------------------------------------------
-%% @spec new_timestamp() ->
-%%        Timestamp
-%% @doc Get the current timestamp as defined in RFC4122.
-%% @end
-%% -------------------------------------------------------------------
-new_timestamp() ->
-  Now = {_MegaSecs,_Secs,MicroSecs} = now(),
-  Utc = calendar:now_to_universal_time(Now),
-  Epoch = calendar:datetime_to_gregorian_seconds({{1582,10,15}, {0,0,0}}),
-  Seconds = calendar:datetime_to_gregorian_seconds(Utc) - Epoch,
-  Timestamp = ((Seconds * 1000000) + MicroSecs) * 10,
-  Timestamp.
 
 
 %% -------------------------------------------------------------------
@@ -432,16 +370,6 @@ get_clock_seq(State) ->
 
 
 %% -------------------------------------------------------------------
-%% @spec new_clock_seq() ->
-%%        Number
-%% @doc Generate a new clock sequence.
-%% @end
-%% -------------------------------------------------------------------
-new_clock_seq() ->
-  new_random(14).
-
-
-%% -------------------------------------------------------------------
 %% @spec set_clock_seq(ClockSeq, State) ->
 %%        State
 %% @doc Set the clock sequence.
@@ -449,25 +377,4 @@ new_clock_seq() ->
 %% -------------------------------------------------------------------
 set_clock_seq(ClockSeq, State) ->
   dict:store(clock_seq, ClockSeq, State).
-
-
-%% -------------------------------------------------------------------
-%% @spec pack(TL, TM, THV, CSHR, CSL, N) ->
-%%        UUID
-%% @doc Pack the parts into an UUID.
-%% @end
-%% -------------------------------------------------------------------
-pack(TL, TM, THV, CSHR, CSL, N) ->
-  <<UUID:128>> = <<TL:32, TM:16, THV:16, CSHR:8, CSL:8, N:48>>,
-  UUID.
-
-
-%% -------------------------------------------------------------------
-%% @spec unpack(UUID) ->
-%%        [TL, TM, THV, CSHR, CSL, N]
-%% @doc Unpack the UUID into it's parts.
-%% @end
-%% -------------------------------------------------------------------
-unpack(<<TL:32, TM:16, THV:16, CSHR:8, CSL:8, N:48>>) ->
-  [TL, TM, THV, CSHR, CSL, N].
 
