@@ -7,11 +7,13 @@
 %% ===================================================================
 
 setup() ->
+  error_logger:tty(false),
   euuid:start().
 
 
 teardown(_) ->
-  euuid:stop().
+  euuid:stop(),
+  error_logger:tty(true).
 
 
 supervisor_test() ->
