@@ -96,27 +96,27 @@ new_clock_seq() ->
 %% @end
 %% -------------------------------------------------------------------
 new_random(4) ->
-  random:uniform(16) -1;
+  crypto:rand_uniform(0, 16);
 new_random(6) ->
-  random:uniform(64) -1;
+  crypto:rand_uniform(0, 64);
 new_random(8) ->
-  random:uniform(256) -1;
+  crypto:rand_uniform(0, 256);
 new_random(12) ->
-  random:uniform(4096) -1;
+  crypto:rand_uniform(0, 4096);
 new_random(14) ->
-  random:uniform(16384) -1;
+  crypto:rand_uniform(0, 16384);
 new_random(16) ->
-  random:uniform(65536) -1;
+  crypto:rand_uniform(0, 65536);
 new_random(24) ->
-  random:uniform(16777216) -1;
+  crypto:rand_uniform(0, 16777216);
 new_random(32) ->
-  random:uniform(4294967296) -1;
+  crypto:rand_uniform(0, 4294967296);
 new_random(48) ->
-  random:uniform(281474976710656) -1;
+  crypto:rand_uniform(0, 28147497671065);
 new_random(64) ->
-  random:uniform(18446744073709551616) -1;
+  crypto:rand_uniform(0, 18446744073709551616);
 new_random(Bits) when Bits > 0 andalso is_integer(Bits) ->
-  random:uniform(erlang:trunc(math:pow(2, Bits))) -1.
+  crypto:rand_uniform(0, erlang:trunc(math:pow(2, Bits))).
 
 
 %% -------------------------------------------------------------------
