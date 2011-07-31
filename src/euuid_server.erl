@@ -53,6 +53,9 @@
 
 -define(SERVER, ?MODULE).
 
+%% State record.
+-record(state, {mac, timestamp, clock_seq}).
+
 
 %%====================================================================
 %% API
@@ -135,11 +138,10 @@ time_custom() ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
-  Dict0 = dict:new(),
-  Dict1 = set_timestamp(euuid_util:get_timestamp(), Dict0),
-  Dict2 = set_clock_seq(euuid_util:new_clock_seq(), Dict1),
-  Dict3 = set_mac(euuid_util:get_mac_addr(), Dict2),
-  {ok, Dict3}.
+  Mac = euuid_util:get_mac_addr(),
+  Timestamp = euuid_util:get_timestamp(),
+  ClockSeq = euuid_util:new_clock_seq(),
+  {ok, #state{mac = Mac, timestamp = Timestamp, clock_seq = ClockSeq}}.
 
 
 %%--------------------------------------------------------------------
@@ -154,7 +156,11 @@ init([]) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_call(time_mac, _From, State) ->
-  {data, Timestamp, ClockSeq, Mac, State1} = get_data(State),
+  NewState = update_state(State),
+  Mac = NewState#state.mac,
+  Timestamp = NewState#state.timestamp,
+  ClockSeq = NewState#state.clock_seq,
+
   <<TH:12, TM:16, TL:32>> = <<Timestamp:60>>,
   V = 1,
   <<THV:16>> = <<V:4, TH:12>>,
@@ -162,7 +168,7 @@ handle_call(time_mac, _From, State) ->
   R = 2#10,
   <<CSHR:8>> = <<R:2, CSH:6>>,
   UUID = euuid_util:pack(TL, TM, THV, CSHR, CSL, Mac),
-  {reply, UUID, State1};
+  {reply, UUID, NewState};
 
 handle_call({md5, NsUUID, Name}, _From, State) ->
   Data = list_to_binary([<<NsUUID:128>>, Name]),
@@ -201,7 +207,11 @@ handle_call({sha1, NsUUID, Name}, _From, State) ->
   {reply, UUID, State};
 
 handle_call(time_custom, _From, State) ->
-  {data, Timestamp, ClockSeq, Mac, State1} = get_data(State),
+  NewState = update_state(State),
+  Mac = NewState#state.mac,
+  Timestamp = NewState#state.timestamp,
+  ClockSeq = NewState#state.clock_seq,
+
   <<TL:32, TM:16, TH:12>> = <<Timestamp:60>>,
   V = 15,
   <<THV:16>> = <<V:4, TH:12>>,
@@ -209,7 +219,7 @@ handle_call(time_custom, _From, State) ->
   R = 2#10,
   <<CSHR:8>> = <<R:2, CSH:6>>,
   UUID = euuid_util:pack(TL, TM, THV, CSHR, CSL, Mac),
-  {reply, UUID, State1};
+  {reply, UUID, NewState};
 
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
@@ -267,99 +277,18 @@ code_change(_OldVsn, State, _Extra) ->
 %%====================================================================
 
 %% -------------------------------------------------------------------
-%% @spec get_data(State) ->
-%%        {data, Timestamp, ClockSeq, Mac, State}
-%% @doc get the persistent data.
+%% @spec update_state(State) ->
+%%        NewState
+%% @doc Update the state with new values.
 %% @end
 %% -------------------------------------------------------------------
-get_data(State) ->
-  NewTimestamp = euuid_util:get_timestamp(),
-  case get_timestamp(State) of
-    {ok, Timestamp} when Timestamp > NewTimestamp ->
-      NewClockSeq = euuid_util:new_clock_seq();
-    {ok, _Timestamp} ->
-      case get_clock_seq(State) of
-        {ok, ClockSeq} ->
-          NewClockSeq = ClockSeq;
-        error ->
-          NewClockSeq = euuid_util:new_clock_seq()
-      end;
-    error ->
-      NewClockSeq = euuid_util:new_clock_seq()
+update_state(State) ->
+  Mac = State#state.mac,
+  PrevTimestamp = State#state.timestamp,
+  CurrTimestamp = euuid_util:get_timestamp(),
+  ClockSeq = case PrevTimestamp < CurrTimestamp of
+    true -> State#state.clock_seq;
+    false -> euuid_util:new_clock_seq()
   end,
-
-  case get_mac(State) of
-    {ok, Mac} ->
-      NewMac = Mac;
-    error ->
-      NewMac = euuid_util:get_mac_addr()
-  end,
-
-  State1 = set_timestamp(NewTimestamp, State),
-  State2 = set_clock_seq(NewClockSeq, State1),
-  State3 = set_mac(NewMac, State2),
-  {data, NewTimestamp, NewClockSeq, NewMac, State3}.
-
-
-%% -------------------------------------------------------------------
-%% @spec get_mac(State) ->
-%%        {ok, Mac} |
-%%        error
-%% @doc get the MAC-address.
-%% @end
-%% -------------------------------------------------------------------
-get_mac(State) ->
-  dict:find(mac, State).
-
-
-%% -------------------------------------------------------------------
-%% @spec set_mac(Mac, State) ->
-%%        State
-%% @doc Set the MAC-address.
-%% @end
-%% -------------------------------------------------------------------
-set_mac(Mac, State) ->
-  dict:store(mac, Mac, State).
-
-
-%% -------------------------------------------------------------------
-%% @spec get_timestamp(State) ->
-%%        {ok, Timestamp} |
-%%        error
-%% @doc Get the last timestamp as defined in RFC4122.
-%% @end
-%% -------------------------------------------------------------------
-get_timestamp(State) ->
-  dict:find(timestamp, State).
-
-
-%% -------------------------------------------------------------------
-%% @spec set_timestamp(Timestamp, State) ->
-%%        State
-%% @doc Set the clock sequence.
-%% @end
-%% -------------------------------------------------------------------
-set_timestamp(Timestamp, State) ->
-  dict:store(timestamp, Timestamp, State).
-
-
-%% -------------------------------------------------------------------
-%% @spec get_clock_seq(State) ->
-%%        {ok, ClockSeq} |
-%%        error
-%% @doc Get the clock sequence.
-%% @end
-%% -------------------------------------------------------------------
-get_clock_seq(State) ->
-  dict:find(clock_seq, State).
-
-
-%% -------------------------------------------------------------------
-%% @spec set_clock_seq(ClockSeq, State) ->
-%%        State
-%% @doc Set the clock sequence.
-%% @end
-%% -------------------------------------------------------------------
-set_clock_seq(ClockSeq, State) ->
-  dict:store(clock_seq, ClockSeq, State).
-
+  #state{mac = Mac, timestamp = CurrTimestamp, clock_seq = ClockSeq}.
+  
