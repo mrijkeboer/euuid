@@ -288,7 +288,7 @@ update_state(State) ->
   CurrTimestamp = euuid_util:get_timestamp(),
   ClockSeq = case PrevTimestamp < CurrTimestamp of
     true -> State#state.clock_seq;
-    false -> euuid_util:new_clock_seq()
+    false -> euuid_util:incr_clock_seq(State#state.clock_seq)
   end,
   #state{mac = Mac, timestamp = CurrTimestamp, clock_seq = ClockSeq}.
   

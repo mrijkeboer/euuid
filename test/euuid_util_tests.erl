@@ -13,6 +13,15 @@ get_timestamp_test_() ->
     ?_assert(is_integer(euuid_util:get_timestamp())),
     ?_assert(euuid_util:get_timestamp() < euuid_util:get_timestamp())
   ].
+
+
+incr_clock_seq_test_() ->
+  [
+    ?_assertEqual(1, euuid_util:incr_clock_seq(0)),
+    ?_assertEqual(16383, euuid_util:incr_clock_seq(16382)),
+    ?_assertEqual(0, euuid_util:incr_clock_seq(16383)),
+    ?_assertEqual(1, euuid_util:incr_clock_seq(16384))
+  ].
   
 
 new_clock_seq_test_() ->

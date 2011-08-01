@@ -36,6 +36,7 @@
 %% API
 -export([get_mac_addr/0]).
 -export([get_timestamp/0]).
+-export([incr_clock_seq/1]).
 -export([new_clock_seq/0]).
 -export([new_random/1]).
 -export([pack/6]).
@@ -77,6 +78,16 @@ get_timestamp() ->
   Seconds = calendar:datetime_to_gregorian_seconds(Utc) - Epoch,
   Timestamp = ((Seconds * 1000000) + MicroSecs) * 10,
   Timestamp.
+
+
+%% -------------------------------------------------------------------
+%% @spec incr_clock_seq(ClockSeq) ->
+%%        Number
+%% @doc Increment the clock sequence.
+%% @end
+%% -------------------------------------------------------------------
+incr_clock_seq(ClockSeq) ->
+  (ClockSeq + 1) rem 16384.
 
 
 %% -------------------------------------------------------------------
