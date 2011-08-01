@@ -18,9 +18,11 @@ get_timestamp_test_() ->
 incr_clock_seq_test_() ->
   [
     ?_assertEqual(1, euuid_util:incr_clock_seq(0)),
+    ?_assertEqual(2, euuid_util:incr_clock_seq(1)),
     ?_assertEqual(16383, euuid_util:incr_clock_seq(16382)),
     ?_assertEqual(0, euuid_util:incr_clock_seq(16383)),
-    ?_assertEqual(1, euuid_util:incr_clock_seq(16384))
+    ?_assertEqual(1, euuid_util:incr_clock_seq(16384)),
+    ?_assertEqual(2, euuid_util:incr_clock_seq(-1))
   ].
   
 

@@ -86,8 +86,14 @@ get_timestamp() ->
 %% @doc Increment the clock sequence.
 %% @end
 %% -------------------------------------------------------------------
-incr_clock_seq(ClockSeq) ->
-  (ClockSeq + 1) rem 16384.
+incr_clock_seq(ClockSeq) when ClockSeq > 0 ->
+  (ClockSeq + 1) rem 16384;
+
+incr_clock_seq(ClockSeq) when ClockSeq < 0 ->
+  ((ClockSeq * -1) + 1) rem 16384;
+
+incr_clock_seq(0) ->
+  1.
 
 
 %% -------------------------------------------------------------------
