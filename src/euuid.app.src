@@ -27,7 +27,7 @@
 
 {application,euuid,
   [{description,[]},
-  {vsn,"1"},
+  {vsn,"1.0.0"},
   {registered,[]},
   {applications,[kernel,stdlib]},
   {mod,{euuid_app,[]}},
