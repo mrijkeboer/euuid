@@ -38,7 +38,6 @@
 -export([get_timestamp/0]).
 -export([incr_clock_seq/1]).
 -export([new_clock_seq/0]).
--export([new_random/1]).
 -export([pack/6]).
 -export([unpack/1]).
 
@@ -54,9 +53,7 @@
 %% @end
 %% -------------------------------------------------------------------
 gen_mac_addr() ->
-  Head = new_random(6),
-  Rest = new_random(16),
-  Nic = new_random(24),
+  <<Head:6, Rest:16, Nic:24, _:2>> = crypto:rand_bytes(6),
   Local = 1,
   Multicast = 1,
   <<Mac:48>> = <<Head:6, Local:1, Multicast:1, Rest:16, Nic:24>>,
@@ -101,37 +98,8 @@ incr_clock_seq(0) ->
 %% @end
 %% -------------------------------------------------------------------
 new_clock_seq() ->
-  new_random(14).
-
-
-%% -------------------------------------------------------------------
-%% @spec new_random(Bits) ->
-%%        Number
-%% @doc Generate a new random number with a maximum size of Bits bit.
-%% @end
-%% -------------------------------------------------------------------
-new_random(4) ->
-  crypto:rand_uniform(0, 16);
-new_random(6) ->
-  crypto:rand_uniform(0, 64);
-new_random(8) ->
-  crypto:rand_uniform(0, 256);
-new_random(12) ->
-  crypto:rand_uniform(0, 4096);
-new_random(14) ->
-  crypto:rand_uniform(0, 16384);
-new_random(16) ->
-  crypto:rand_uniform(0, 65536);
-new_random(24) ->
-  crypto:rand_uniform(0, 16777216);
-new_random(32) ->
-  crypto:rand_uniform(0, 4294967296);
-new_random(48) ->
-  crypto:rand_uniform(0, 28147497671065);
-new_random(64) ->
-  crypto:rand_uniform(0, 18446744073709551616);
-new_random(Bits) when Bits > 0 andalso is_integer(Bits) ->
-  crypto:rand_uniform(0, erlang:trunc(math:pow(2, Bits))).
+  <<ClockSeq:14, _:2>> = crypto:rand_bytes(2),
+  ClockSeq.
 
 
 %% -------------------------------------------------------------------

@@ -24,20 +24,13 @@ incr_clock_seq_test_() ->
     ?_assertEqual(1, euuid_util:incr_clock_seq(16384)),
     ?_assertEqual(2, euuid_util:incr_clock_seq(-1))
   ].
-  
+
 
 new_clock_seq_test_() ->
   [
     ?_assert(0 =< euuid_util:new_clock_seq()),
     ?_assert(16384 > euuid_util:new_clock_seq()),
     ?_assert(euuid_util:new_clock_seq() =/= euuid_util:new_clock_seq())
-  ].
-
-
-new_random_test_() ->
-  [
-    ?_assert(0 =< euuid_util:new_random(4)),
-    ?_assert(16 > euuid_util:new_random(4))
   ].
 
 

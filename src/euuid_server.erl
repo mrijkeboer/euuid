@@ -182,12 +182,7 @@ handle_call({md5, NsUUID, Name}, _From, State) ->
   {reply, UUID, State};
 
 handle_call(random, _From, State) ->
-  TH = euuid_util:new_random(12),
-  TM = euuid_util:new_random(16),
-  TL = euuid_util:new_random(32),
-  CSH = euuid_util:new_random(6),
-  CSL = euuid_util:new_random(8),
-  N = euuid_util:new_random(48),
+  <<TH:12, TM:16, TL:32, CSH:6, CSL:8, N:48, _:6>> = crypto:rand_bytes(16),
   V = 4,
   <<THV:16>> = <<V:4, TH:12>>,
   R = 2#10,
