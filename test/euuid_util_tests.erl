@@ -1,10 +1,10 @@
 -module(euuid_util_tests).
 -include_lib("eunit/include/eunit.hrl").
 
-get_mac_addr_test_() ->
+gen_mac_addr_test_() ->
   [
-    ?_assert(0 =< euuid_util:get_mac_addr()),
-    ?_assert(281474976710656 > euuid_util:get_mac_addr())
+    ?_assert(0 =< euuid_util:gen_mac_addr()),
+    ?_assert(281474976710656 > euuid_util:gen_mac_addr())
   ].
 
 
