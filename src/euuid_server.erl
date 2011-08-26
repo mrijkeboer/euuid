@@ -138,7 +138,7 @@ time_custom() ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
-  Mac = euuid_util:get_mac_addr(),
+  Mac = euuid_util:gen_mac_addr(),
   Timestamp = euuid_util:get_timestamp(),
   ClockSeq = euuid_util:new_clock_seq(),
   {ok, #state{mac = Mac, timestamp = Timestamp, clock_seq = ClockSeq}}.

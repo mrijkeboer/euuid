@@ -34,7 +34,7 @@
 -author('Martijn Rijkeboer <martijn@bunix.org>').
 
 %% API
--export([get_mac_addr/0]).
+-export([gen_mac_addr/0]).
 -export([get_timestamp/0]).
 -export([incr_clock_seq/1]).
 -export([new_clock_seq/0]).
@@ -48,21 +48,19 @@
 %%====================================================================
 
 %% -------------------------------------------------------------------
-%% @spec get_mac_addr() ->
+%% @spec gen_mac_addr() ->
 %%        Mac
-%% @doc Get the first MAC address or generate one if non available.
+%% @doc Generate a MAC address as defined in RFC 4122 section 4.5.
 %% @end
 %% -------------------------------------------------------------------
-get_mac_addr() ->
-  try
-    {ok, IfAddrs} = inet:getifaddrs(),
-    <<Mac:48>> = get_mac_addr(IfAddrs),
-    Mac
-  catch
-    _:_ ->
-      <<AltMac:48>> = create_mac_addr(),
-      AltMac
-  end.
+gen_mac_addr() ->
+  Head = new_random(6),
+  Rest = new_random(16),
+  Nic = new_random(24),
+  Local = 1,
+  Multicast = 1,
+  <<Mac:48>> = <<Head:6, Local:1, Multicast:1, Rest:16, Nic:24>>,
+  Mac.
 
 
 %% -------------------------------------------------------------------
@@ -155,44 +153,4 @@ pack(TL, TM, THV, CSHR, CSL, N) ->
 %% -------------------------------------------------------------------
 unpack(<<TL:32, TM:16, THV:16, CSHR:8, CSL:8, N:48>>) ->
   [TL, TM, THV, CSHR, CSL, N].
-
-
-%%====================================================================
-%% Internal functions
-%%====================================================================
-
-%% -------------------------------------------------------------------
-%% @spec create_mac_addr() ->
-%%        Mac
-%% @doc Generate a new MAC address.
-%% @end
-%% -------------------------------------------------------------------
-create_mac_addr() ->
-  Head = new_random(6),
-  Rest = new_random(16),
-  Nic = new_random(24),
-  Local = 1,
-  Multicast = 1,
-  <<Head:6, Local:1, Multicast:1, Rest:16, Nic:24>>.
-
-
-%% -------------------------------------------------------------------
-%% @spec get_mac_addr(IfAddrs) ->
-%%        Mac
-%% @doc Get the first MAC address or generate one if non available.
-%% @end
-%% -------------------------------------------------------------------
-get_mac_addr([H|T]) ->
-  {_Interface, Flags} = H,
-  case proplists:get_value(hwaddr, Flags) of
-    [0, 0, 0, 0, 0, 0] ->
-      get_mac_addr(T);
-    [A, B, C, D, E, F] ->
-      <<A:8, B:8, C:8, D:8, E:8, F:8>>;
-    _ ->
-      get_mac_addr(T)
-  end;
-
-get_mac_addr([]) ->
-  create_mac_addr().
 
