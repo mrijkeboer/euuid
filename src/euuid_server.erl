@@ -172,7 +172,7 @@ handle_call(time_mac, _From, State) ->
 
 handle_call({md5, NsUUID, Name}, _From, State) ->
   Data = list_to_binary([<<NsUUID:128>>, Name]),
-  <<MD5:128>> = crypto:md5(Data),
+  <<MD5:128>> = crypto:hash(md5, Data),
   <<TL:32, TM:16, _:4, TH:12, _:2, CSH:6, CSL:8, N:48>> = <<MD5:128>>,
   V = 3,
   <<THV:16>> = <<V:4, TH:12>>,
@@ -182,7 +182,8 @@ handle_call({md5, NsUUID, Name}, _From, State) ->
   {reply, UUID, State};
 
 handle_call(random, _From, State) ->
-  <<TH:12, TM:16, TL:32, CSH:6, CSL:8, N:48, _:6>> = crypto:rand_bytes(16),
+  <<TH:12, TM:16, TL:32, CSH:6, CSL:8, N:48, _:6>>
+        = crypto:strong_rand_bytes(16),
   V = 4,
   <<THV:16>> = <<V:4, TH:12>>,
   R = 2#10,
@@ -192,7 +193,7 @@ handle_call(random, _From, State) ->
 
 handle_call({sha1, NsUUID, Name}, _From, State) ->
   Data = list_to_binary([<<NsUUID:128>>, Name]),
-  <<Sha1:160>> = crypto:sha(Data),
+  <<Sha1:160>> = crypto:hash(sha, Data),
   <<TL:32, TM:16, _:4, TH:12, _:2, CSH:6, CSL:8, N:48, _:32>> = <<Sha1:160>>,
   V = 5,
   <<THV:16>> = <<V:4, TH:12>>,

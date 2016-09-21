@@ -53,7 +53,7 @@
 %% @end
 %% -------------------------------------------------------------------
 gen_mac_addr() ->
-  <<Head:6, Rest:16, Nic:24, _:2>> = crypto:rand_bytes(6),
+  <<Head:6, Rest:16, Nic:24, _:2>> = crypto:strong_rand_bytes(6),
   Local = 1,
   Multicast = 1,
   <<Mac:48>> = <<Head:6, Local:1, Multicast:1, Rest:16, Nic:24>>,
@@ -67,7 +67,7 @@ gen_mac_addr() ->
 %% @end
 %% -------------------------------------------------------------------
 get_timestamp() ->
-  Now = {_MegaSecs,_Secs,MicroSecs} = now(),
+  Now = {_MegaSecs,_Secs,MicroSecs} = erlang:timestamp(),
   Utc = calendar:now_to_universal_time(Now),
   Epoch = calendar:datetime_to_gregorian_seconds({{1582,10,15}, {0,0,0}}),
   Seconds = calendar:datetime_to_gregorian_seconds(Utc) - Epoch,
@@ -98,7 +98,7 @@ incr_clock_seq(0) ->
 %% @end
 %% -------------------------------------------------------------------
 new_clock_seq() ->
-  <<ClockSeq:14, _:2>> = crypto:rand_bytes(2),
+  <<ClockSeq:14, _:2>> = crypto:strong_rand_bytes(2),
   ClockSeq.
 
 
